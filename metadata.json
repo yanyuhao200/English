@@ -1,0 +1,5 @@
+{
+  "name": "EnglishFlow",
+  "description": "AI English Speaking Practice Assistant with dynamic flow control and implicit recast system.",
+  "requestFramePermissions": ["microphone"]
+}
