@@ -10,11 +10,11 @@ import Waveform from './components/ui/Waveform';
 import FlowSlider from './components/ui/FlowSlider';
 import HintCards from './components/ui/HintCards';
 import ChatTranscript from './components/ui/ChatTranscript';
-import { Mic, Square } from 'lucide-react';
+import { Mic, MicOff, Square } from 'lucide-react';
 
 export default function App() {
-  const { isConnected, combo } = useStore();
-  const { connect, disconnect } = useEnglishFlow();
+  const { isConnected, isListening, combo } = useStore();
+  const { connect, disconnect, toggleListening } = useEnglishFlow();
 
   return (
     <Layout>
@@ -57,14 +57,27 @@ export default function App() {
             <FlowSlider />
             <HintCards />
             
-            {/* Stop Button */}
-            <button 
-              onClick={disconnect}
-              className="absolute bottom-8 bg-white text-slate-800 px-6 py-3 rounded-full font-medium shadow-md hover:bg-slate-50 transition-colors active:scale-95 flex items-center gap-2 border border-slate-200"
-            >
-              <Square className="w-4 h-4" />
-              End Session
-            </button>
+            {/* Controls */}
+            <div className="absolute bottom-8 flex items-center gap-4">
+              <button 
+                onClick={toggleListening}
+                className={`w-14 h-14 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 ${
+                  isListening 
+                    ? 'bg-brand-primary text-white animate-pulse shadow-brand-primary/30' 
+                    : 'bg-white text-slate-400 border border-slate-200'
+                }`}
+              >
+                {isListening ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
+              </button>
+
+              <button 
+                onClick={disconnect}
+                className="bg-white text-slate-800 px-6 py-4 rounded-full font-medium shadow-md hover:bg-slate-50 transition-colors active:scale-95 flex items-center gap-2 border border-slate-200"
+              >
+                <Square className="w-4 h-4" />
+                End Session
+              </button>
+            </div>
           </>
         )}
       </div>

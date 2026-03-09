@@ -2,7 +2,7 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useStore } from '../store/useStore';
 
 export function useEnglishFlow() {
-  const { setConnected, setAiSpeaking, setThinking, aiSpeed, setHintLevel, incrementCombo, addOrUpdateMessage } = useStore();
+  const { setConnected, setAiSpeaking, setThinking, setListening, aiSpeed, setHintLevel, incrementCombo, addOrUpdateMessage } = useStore();
   const recognitionRef = useRef<any>(null);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const comboTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -37,6 +37,7 @@ export function useEnglishFlow() {
       try {
         if (recognitionRef.current && isListeningRef.current) {
           recognitionRef.current.start();
+          setListening(true);
         }
       } catch (e) {}
       resetSilenceTimer();
@@ -48,18 +49,20 @@ export function useEnglishFlow() {
       try {
         if (recognitionRef.current && isListeningRef.current) {
           recognitionRef.current.start();
+          setListening(true);
         }
       } catch (err) {}
     }
 
     synthRef.current.speak(utterance);
-  }, [aiSpeed, setAiSpeaking, resetSilenceTimer]);
+  }, [aiSpeed, setAiSpeaking, setListening, resetSilenceTimer]);
 
   const handleUserAudioText = useCallback(async (text: string) => {
     const userMsgId = Date.now().toString();
     addOrUpdateMessage(userMsgId, 'user', text, true);
 
     try { recognitionRef.current?.stop(); } catch (e) {}
+    setListening(false);
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     setThinking(true);
 
@@ -83,7 +86,7 @@ export function useEnglishFlow() {
               3. The Bridge: If the user speaks Chinese, translate it to natural English and gently guide them to repeat it.
               4. Implicit Recast: If the user makes a grammar mistake, reply naturally using the correct grammar. Wrap the corrected words in double asterisks like **this** so the UI can highlight them. Do not point out the mistake explicitly.
               5. Be concise, friendly, and conversational (1-3 sentences max).
-              6. If the user hesitates, say "Take your time" or "Hmm...".`
+              6. You MUST return your response in JSON format with two fields: "english" (your English response) and "chinese" (the Chinese translation of your response).`
             },
             ...history.slice(-10), // Keep last 10 messages for context
             { role: 'user', content: text }
@@ -92,10 +95,22 @@ export function useEnglishFlow() {
       });
 
       const data = await response.json();
-      const aiText = data.choices?.[0]?.message?.content || "Sorry, I didn't catch that.";
+      let aiText = "Sorry, I didn't catch that.";
+      let aiTranslation = "";
+
+      try {
+        const content = data.choices?.[0]?.message?.content;
+        if (content) {
+          const parsed = JSON.parse(content);
+          aiText = parsed.english || content;
+          aiTranslation = parsed.chinese || "";
+        }
+      } catch (e) {
+        aiText = data.choices?.[0]?.message?.content || aiText;
+      }
 
       const aiMsgId = (Date.now() + 1).toString();
-      addOrUpdateMessage(aiMsgId, 'ai', aiText, true);
+      addOrUpdateMessage(aiMsgId, 'ai', aiText, true, aiTranslation);
       
       setThinking(false);
       speak(aiText);
@@ -105,16 +120,35 @@ export function useEnglishFlow() {
       setThinking(false);
       speak("Sorry, I'm having trouble connecting to my brain.");
     }
-  }, [addOrUpdateMessage, speak, setThinking]);
+  }, [addOrUpdateMessage, speak, setThinking, setListening]);
+
+  const toggleListening = useCallback(() => {
+    if (!recognitionRef.current) return;
+    
+    if (useStore.getState().isListening) {
+      isListeningRef.current = false;
+      setListening(false);
+      try { recognitionRef.current.stop(); } catch (e) {}
+    } else {
+      isListeningRef.current = true;
+      setListening(true);
+      try { recognitionRef.current.start(); } catch (e) {}
+    }
+  }, [setListening]);
 
   const connect = useCallback(() => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Speech Recognition is not supported in this browser. Please use Chrome or Edge.");
+      alert("Speech Recognition is not supported in this browser. Please use Chrome, Edge, or Safari 14.5+ with Siri enabled.");
       return;
     }
 
     synthRef.current = window.speechSynthesis;
+    
+    // Warmup TTS for mobile browsers (requires user interaction to initialize)
+    const warmup = new SpeechSynthesisUtterance('');
+    synthRef.current.speak(warmup);
+
     recognitionRef.current = new SpeechRecognition();
     recognitionRef.current.continuous = false;
     recognitionRef.current.interimResults = false;
@@ -129,18 +163,27 @@ export function useEnglishFlow() {
 
     recognitionRef.current.onend = () => {
       if (isListeningRef.current && !useStore.getState().isAiSpeaking && !useStore.getState().isThinking) {
-        try { recognitionRef.current.start(); } catch (e) {}
+        try { 
+          recognitionRef.current.start(); 
+          setListening(true);
+        } catch (e) {
+          setListening(false);
+        }
+      } else {
+        setListening(false);
       }
     };
 
     recognitionRef.current.onerror = (event: any) => {
       if (event.error !== 'no-speech') {
         console.error("Speech recognition error", event.error);
+        setListening(false);
       }
     };
 
     setConnected(true);
     isListeningRef.current = true;
+    setListening(true);
     resetSilenceTimer();
 
     comboTimerRef.current = setInterval(() => {
@@ -152,11 +195,12 @@ export function useEnglishFlow() {
     try { recognitionRef.current.start(); } catch (e) {}
     
     const greeting = "Hello! I'm EnglishFlow. What would you like to talk about today?";
+    const greetingTrans = "你好！我是 EnglishFlow。今天想聊点什么？";
     const aiMsgId = Date.now().toString();
-    addOrUpdateMessage(aiMsgId, 'ai', greeting, true);
+    addOrUpdateMessage(aiMsgId, 'ai', greeting, true, greetingTrans);
     speak(greeting);
 
-  }, [setConnected, resetSilenceTimer, incrementCombo, handleUserAudioText, speak, addOrUpdateMessage]);
+  }, [setConnected, setListening, resetSilenceTimer, incrementCombo, handleUserAudioText, speak, addOrUpdateMessage]);
 
   const disconnect = useCallback(() => {
     isListeningRef.current = false;
@@ -169,13 +213,14 @@ export function useEnglishFlow() {
     setConnected(false);
     setAiSpeaking(false);
     setThinking(false);
+    setListening(false);
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     if (comboTimerRef.current) clearInterval(comboTimerRef.current);
-  }, [setConnected, setAiSpeaking, setThinking]);
+  }, [setConnected, setAiSpeaking, setThinking, setListening]);
 
   useEffect(() => {
     return () => disconnect();
   }, [disconnect]);
 
-  return { connect, disconnect };
+  return { connect, disconnect, toggleListening };
 }
