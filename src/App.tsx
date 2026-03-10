@@ -17,6 +17,7 @@ import Navigation from './components/Navigation/Navigation';
 import { AnimatePresence, motion } from 'motion/react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { Languages } from 'lucide-react';
+import BilingualLabel from './components/ui/BilingualLabel';
 
 const PageWrapper = ({ children }: { children: React.ReactNode }) => (
   <motion.div
@@ -45,10 +46,10 @@ export default function App() {
   return (
     <Layout>
       {/* Header */}
-      <header className="p-6 flex justify-between items-center relative z-10">
-        <h1 className="text-xl font-semibold text-slate-800 tracking-tight">
-          EnglishFlow
-        </h1>
+      <header className="p-6 flex items-center relative z-10">
+        <div className="flex-1">
+          <BilingualLabel en="EnglishFlow" cn="AI 英语流" enClassName="text-xl font-semibold text-slate-800 tracking-tight" cnClassName="text-[10px]" align="left" />
+        </div>
         <div className="flex items-center gap-4">
           <button
             type="button"
@@ -60,13 +61,17 @@ export default function App() {
             }`}
           >
             <Languages className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">
-              {showTranslation ? 'Bilingual' : 'English'}
-            </span>
+            <BilingualLabel 
+              en={showTranslation ? 'Bilingual' : 'English'} 
+              cn={showTranslation ? '双语对照' : '仅英语'} 
+              enClassName="text-[10px] font-bold uppercase tracking-wider" 
+              cnClassName="text-[8px]" 
+              align="center"
+            />
           </button>
           {combo > 0 && (
             <div className="flex items-center gap-2 bg-white/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/50 shadow-sm">
-              <span className="text-sm font-medium text-slate-600">Flow Combo</span>
+              <BilingualLabel en="Flow Combo" cn="连击" enClassName="text-sm font-medium text-slate-600" cnClassName="text-[10px]" align="center" />
               <span className="text-brand-primary font-bold">{combo}</span>
             </div>
           )}

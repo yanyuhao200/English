@@ -70,7 +70,9 @@ export default function Review() {
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <BilingualLabel en="Time-Travel" cn="练习历程" enClassName="text-xl" cnClassName="text-xs" />
+        <div className="flex-1 flex justify-center -ml-9">
+          <BilingualLabel en="Time-Travel" cn="练习历程" enClassName="text-xl" cnClassName="text-xs" align="center" />
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto flex flex-col gap-4 pb-20">

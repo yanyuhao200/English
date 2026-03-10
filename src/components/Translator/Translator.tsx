@@ -20,10 +20,8 @@ export default function Translator() {
   const handleTranslate = async () => {
     if (inputText.trim() && !isTranslating) {
       const textToTranslate = inputText;
-      const success = await translate(textToTranslate);
-      if (success) {
-        setInputText('');
-      }
+      await translate(textToTranslate);
+      // Removed setInputText('') to allow user to compare
     }
   };
 
@@ -63,12 +61,12 @@ export default function Translator() {
 
   return (
     <div className="flex-1 flex flex-col p-6 pb-32 max-w-md mx-auto w-full">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+      <header className="mb-8 text-center flex flex-col items-center">
+        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2 mb-1">
           <Sparkles className="w-8 h-8 text-amber-500" />
-          <BilingualLabel en="Idiomatic" cn="地道说" enClassName="text-3xl" cnClassName="text-sm" />
+          <BilingualLabel en="Idiomatic" cn="地道说" enClassName="text-3xl" cnClassName="text-sm" align="center" />
         </h1>
-        <p className="text-slate-500">From literal to natural.</p>
+        <BilingualLabel en="From literal to natural." cn="从直译到地道。" enClassName="text-slate-500" cnClassName="text-xs" align="center" />
       </header>
 
       <div className="relative mb-8">
@@ -115,7 +113,7 @@ export default function Translator() {
             className="space-y-4"
           >
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-slate-400 uppercase tracking-widest">Results</span>
+              <BilingualLabel en="Results" cn="翻译结果" enClassName="text-sm font-medium text-slate-400 uppercase tracking-widest" cnClassName="text-[10px]" align="left" />
               <div className="flex gap-2">
                 <button
                   onClick={() => isFavorited ? removeFavorite(result.id) : addFavorite(result)}
@@ -127,7 +125,8 @@ export default function Translator() {
                   onClick={handleGoPractice}
                   className="flex items-center gap-1 text-sm font-medium text-brand-primary bg-brand-primary/10 px-3 py-1 rounded-full hover:bg-brand-primary/20 transition-all"
                 >
-                  Practice <ArrowRight className="w-4 h-4" />
+                  <BilingualLabel en="Practice" cn="去练习" enClassName="text-sm" cnClassName="text-[10px]" align="center" />
+                  <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -178,10 +177,12 @@ export default function Translator() {
             ))}
 
             <div className="p-4 bg-amber-50/50 rounded-2xl border border-amber-100/50">
-              <p className="text-xs text-amber-700 leading-relaxed italic">
-                <span className="font-bold not-italic mr-1">Why:</span>
-                {result.explanation}
-              </p>
+              <div className="flex gap-1 items-start">
+                <BilingualLabel en="Why:" cn="解析:" enClassName="text-xs font-bold text-amber-700" cnClassName="text-[10px]" align="left" />
+                <p className="text-xs text-amber-700 leading-relaxed italic">
+                  {result.explanation}
+                </p>
+              </div>
             </div>
           </motion.div>
         )}

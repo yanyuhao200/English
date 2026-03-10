@@ -9,12 +9,12 @@ export default function Library() {
 
   return (
     <div className="flex-1 flex flex-col p-6 pb-32 max-w-md mx-auto w-full">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+      <header className="mb-8 text-center flex flex-col items-center">
+        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2 mb-1">
           <LibraryIcon className="w-8 h-8 text-brand-secondary" />
-          <BilingualLabel en="Library" cn="收藏夹" enClassName="text-3xl" cnClassName="text-sm" />
+          <BilingualLabel en="Library" cn="收藏夹" enClassName="text-3xl" cnClassName="text-sm" align="center" />
         </h1>
-        <p className="text-slate-500">Your collection of idiomatic gems.</p>
+        <BilingualLabel en="Your collection of idiomatic gems." cn="你收藏的地道表达。" enClassName="text-slate-500" cnClassName="text-xs" align="center" />
       </header>
 
       {favorites.length === 0 ? (

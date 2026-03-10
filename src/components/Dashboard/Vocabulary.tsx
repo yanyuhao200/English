@@ -68,14 +68,18 @@ export default function Vocabulary() {
       exit={{ opacity: 0, scale: 0.95 }}
       className="flex-1 flex flex-col p-6 w-full max-w-md mx-auto h-full bg-slate-900 text-white rounded-3xl overflow-hidden relative"
     >
-      <header className="flex items-center gap-4 mb-6 z-10">
-        <button 
-          onClick={() => navigate('/')}
-          className="bg-white/10 p-2 rounded-full shadow-sm hover:bg-white/20 transition-all border border-white/10 text-white"
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <BilingualLabel en="Vocab Galaxy" cn="词汇星系" enClassName="text-xl text-white" cnClassName="text-xs text-slate-400" />
+      <header className="flex flex-col items-center gap-2 mb-6 z-10 text-center">
+        <div className="flex items-center gap-4 w-full">
+          <button 
+            onClick={() => navigate('/')}
+            className="bg-white/10 p-2 rounded-full shadow-sm hover:bg-white/20 transition-all border border-white/10 text-white"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div className="flex-1 flex justify-center -ml-9">
+            <BilingualLabel en="Vocab Galaxy" cn="词汇星系" enClassName="text-xl text-white" cnClassName="text-xs text-slate-400" align="center" />
+          </div>
+        </div>
       </header>
 
       <div className="flex-1 relative w-full h-full">
@@ -84,8 +88,14 @@ export default function Vocabulary() {
           className="absolute inset-0 w-full h-full"
         />
         {vocabulary.length === 0 && (
-          <div className="absolute inset-0 flex items-center justify-center text-slate-500 text-sm">
-            Your galaxy is empty. Start talking to collect stars!
+          <div className="absolute inset-0 flex items-center justify-center p-8 text-center">
+            <BilingualLabel 
+              en="Your galaxy is empty. Start talking to collect stars!" 
+              cn="你的星系空空如也。开始聊天来收集星星吧！" 
+              align="center"
+              enClassName="text-slate-500 text-sm"
+              cnClassName="text-xs text-slate-600"
+            />
           </div>
         )}
       </div>

@@ -80,7 +80,7 @@ export default function Dashboard() {
                 enClassName="text-sm"
                 cnClassName="text-[10px]"
               />
-              <span className="text-[10px] text-slate-400 mt-1">{vocabulary.length} words</span>
+              <BilingualLabel en={`${vocabulary.length} words`} cn={`${vocabulary.length} 个词汇`} align="center" enClassName="text-[10px] text-slate-400 mt-1" cnClassName="text-[8px]" />
             </div>
           </button>
         </div>

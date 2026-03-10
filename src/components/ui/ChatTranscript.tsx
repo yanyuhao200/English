@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useStore } from '../../store/useStore';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp, Trash2, X } from 'lucide-react';
+import BilingualLabel from './BilingualLabel';
 
 const AiMessage = ({ msg, isLast, isSpeaking, currentWordIndex, isWhisperMode, onDelete }: { msg: any, isLast: boolean, isSpeaking: boolean, currentWordIndex: number, isWhisperMode: boolean, onDelete: () => void }) => {
   const [showTranslation, setShowTranslation] = useState(false);
@@ -66,7 +67,7 @@ const AiMessage = ({ msg, isLast, isSpeaking, currentWordIndex, isWhisperMode, o
             }`}
           >
             {showTranslation ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {showTranslation ? '隐藏翻译' : '查看翻译'}
+            <BilingualLabel en={showTranslation ? 'Hide Translation' : 'Show Translation'} cn={showTranslation ? '隐藏翻译' : '查看翻译'} enClassName="text-[10px]" cnClassName="text-[8px]" />
           </button>
           <AnimatePresence>
             {showTranslation && (
@@ -105,9 +106,7 @@ export default function ChatTranscript() {
   return (
     <div className="w-full max-w-sm flex flex-col mb-6">
       <div className="flex justify-between items-center mb-2 px-2">
-        <span className={`text-[10px] font-medium uppercase tracking-wider ${isWhisperMode ? 'text-slate-500' : 'text-slate-400'}`}>
-          Transcript
-        </span>
+        <BilingualLabel en="Transcript" cn="对话记录" enClassName={`text-[10px] font-medium uppercase tracking-wider ${isWhisperMode ? 'text-slate-500' : 'text-slate-400'}`} cnClassName="text-[8px]" />
         {messages.length > 0 && (
           <button 
             onClick={() => {
@@ -118,7 +117,7 @@ export default function ChatTranscript() {
             className={`text-[10px] font-medium uppercase tracking-wider flex items-center gap-1 hover:text-red-500 transition-colors ${isWhisperMode ? 'text-slate-500' : 'text-slate-400'}`}
           >
             <Trash2 className="w-3 h-3" />
-            Clear All
+            <BilingualLabel en="Clear All" cn="清空全部" enClassName="text-[10px]" cnClassName="text-[8px]" />
           </button>
         )}
       </div>

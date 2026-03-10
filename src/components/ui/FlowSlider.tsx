@@ -1,12 +1,13 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
+import BilingualLabel from './BilingualLabel';
 
 export default function FlowSlider() {
   const { aiSpeed, setAiSpeed } = useStore();
 
   return (
     <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col items-center gap-4 bg-white/50 backdrop-blur-md p-3 rounded-full shadow-sm border border-white/60">
-      <span className="text-xs font-medium text-slate-500">Fast</span>
+      <BilingualLabel en="Fast" cn="语速快" align="center" enClassName="text-[10px] font-bold uppercase" cnClassName="text-[8px]" />
       <input
         type="range"
         min="0.7"
@@ -17,7 +18,7 @@ export default function FlowSlider() {
         className="w-1 h-32 appearance-none bg-slate-200 rounded-full outline-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-brand-primary [&::-webkit-slider-thumb]:rounded-full cursor-pointer"
         style={{ writingMode: 'bt-lr', WebkitAppearance: 'slider-vertical' } as any}
       />
-      <span className="text-xs font-medium text-slate-500">Clear</span>
+      <BilingualLabel en="Clear" cn="语速慢" align="center" enClassName="text-[10px] font-bold uppercase" cnClassName="text-[8px]" />
     </div>
   );
 }

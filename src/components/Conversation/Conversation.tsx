@@ -103,7 +103,7 @@ export default function Conversation() {
           className={`px-6 py-4 rounded-full font-medium shadow-md transition-all hover:shadow-lg active:scale-95 flex items-center gap-2 border ${isWhisperMode ? 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700' : 'bg-white text-slate-800 hover:bg-slate-50 border-slate-200'}`}
         >
           <Square className="w-4 h-4" />
-          End Session
+          <BilingualLabel en="End Session" cn="结束练习" enClassName="font-medium" cnClassName="text-[10px]" />
         </button>
       </div>
 

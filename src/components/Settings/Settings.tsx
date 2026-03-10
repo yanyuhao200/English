@@ -14,12 +14,12 @@ export default function Settings() {
 
   return (
     <div className="flex-1 flex flex-col p-6 pb-32 max-w-md mx-auto w-full">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
+      <header className="mb-8 text-center flex flex-col items-center">
+        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2 mb-1">
           <SettingsIcon className="w-8 h-8 text-slate-400" />
-          <BilingualLabel en="Settings" cn="设置" enClassName="text-3xl" cnClassName="text-sm" />
+          <BilingualLabel en="Settings" cn="设置" enClassName="text-3xl" cnClassName="text-sm" align="center" />
         </h1>
-        <p className="text-slate-500">Personalize your flow.</p>
+        <BilingualLabel en="Personalize your flow." cn="个性化你的交流。" enClassName="text-slate-500" cnClassName="text-xs" align="center" />
       </header>
 
       <div className="space-y-6">
@@ -36,7 +36,7 @@ export default function Settings() {
               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${showTranslation ? 'left-7' : 'left-1'}`} />
             </button>
           </div>
-          <p className="text-xs text-slate-400">Show Chinese translations for all UI elements.</p>
+          <BilingualLabel en="Show Chinese translations for all UI elements." cn="为所有界面元素显示中文翻译。" enClassName="text-xs text-slate-400" cnClassName="text-[10px]" />
         </section>
 
         <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
@@ -71,7 +71,7 @@ export default function Settings() {
               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isWhisperMode ? 'left-7' : 'left-1'}`} />
             </button>
           </div>
-          <p className="text-xs text-slate-400">Lower volume and softer pitch for private practice.</p>
+          <BilingualLabel en="Lower volume and softer pitch for private practice." cn="降低音量和音调，适合私密练习。" enClassName="text-xs text-slate-400" cnClassName="text-[10px]" />
         </section>
 
         <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
@@ -87,7 +87,7 @@ export default function Settings() {
               <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isHandsFreeMode ? 'left-7' : 'left-1'}`} />
             </button>
           </div>
-          <p className="text-xs text-slate-400">AI automatically listens after speaking. No tapping required.</p>
+          <BilingualLabel en="AI automatically listens after speaking. No tapping required." cn="AI说完后自动开启收音，无需点击。" enClassName="text-xs text-slate-400" cnClassName="text-[10px]" />
         </section>
 
         <button 
