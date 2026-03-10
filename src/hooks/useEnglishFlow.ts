@@ -173,19 +173,29 @@ export function useEnglishFlow() {
 
   const connect = useCallback(() => {
     if (useStore.getState().isConnected) return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Speech Recognition is not supported in this browser. Please use Chrome, Edge, or Safari 14.5+ with Siri enabled.");
-      return;
-    }
-
-    synthRef.current = window.speechSynthesis;
     
-    // Warmup TTS for mobile browsers (requires user interaction to initialize)
-    const warmup = new SpeechSynthesisUtterance('');
-    synthRef.current.speak(warmup);
+    try {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        setTimeout(() => {
+          alert("Speech Recognition is not supported in this browser. Please use Chrome, Edge, or Safari 14.5+ with Siri enabled.");
+        }, 100);
+        return;
+      }
 
-    recognitionRef.current = new SpeechRecognition();
+      if (window.speechSynthesis) {
+        synthRef.current = window.speechSynthesis;
+        // Warmup TTS for mobile browsers (requires user interaction to initialize)
+        // Note: This might still be blocked on some mobile browsers if not in a direct click handler
+        try {
+          const warmup = new SpeechSynthesisUtterance('');
+          synthRef.current.speak(warmup);
+        } catch (e) {
+          console.warn("TTS warmup failed", e);
+        }
+      }
+
+      recognitionRef.current = new SpeechRecognition();
     recognitionRef.current.continuous = false;
     recognitionRef.current.interimResults = false;
     recognitionRef.current.lang = 'en-US';
@@ -268,6 +278,10 @@ export function useEnglishFlow() {
     addOrUpdateMessage(aiMsgId, 'ai', greeting, true, greetingTrans);
     speak(greeting);
 
+    } catch (error) {
+      console.error("Initialization error:", error);
+      setConnected(false);
+    }
   }, [setConnected, setListening, resetSilenceTimer, incrementCombo, handleUserAudioText, speak, addOrUpdateMessage]);
 
   const disconnect = useCallback(() => {
