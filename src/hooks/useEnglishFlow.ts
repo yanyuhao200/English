@@ -28,12 +28,24 @@ export function useEnglishFlow() {
     const cleanText = text.replace(/\*\*/g, '');
     
     setAiSpeaking(true);
+    useStore.getState().setCurrentSpokenWordIndex(0);
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = 'en-US';
     utterance.rate = aiSpeed;
+    utterance.volume = useStore.getState().isWhisperMode ? 0.3 : 1.0;
+    utterance.pitch = useStore.getState().isWhisperMode ? 0.8 : 1.0;
+
+    utterance.onboundary = (event) => {
+      if (event.name === 'word') {
+        const textUpToChar = cleanText.substring(0, event.charIndex);
+        const wordIndex = textUpToChar.split(/\s+/).length - 1;
+        useStore.getState().setCurrentSpokenWordIndex(wordIndex);
+      }
+    };
 
     utterance.onend = () => {
       setAiSpeaking(false);
+      useStore.getState().setCurrentSpokenWordIndex(-1);
       try {
         if (recognitionRef.current && isListeningRef.current) {
           recognitionRef.current.start();
@@ -86,7 +98,7 @@ export function useEnglishFlow() {
               3. The Bridge: If the user speaks Chinese, translate it to natural English and gently guide them to repeat it.
               4. Implicit Recast: If the user makes a grammar mistake, reply naturally using the correct grammar. Wrap the corrected words in double asterisks like **this** so the UI can highlight them. Do not point out the mistake explicitly.
               5. Be concise, friendly, and conversational (1-3 sentences max).
-              6. You MUST return your response in JSON format with two fields: "english" (your English response) and "chinese" (the Chinese translation of your response).`
+              6. You MUST return your response in JSON format with three fields: "english" (your English response), "chinese" (the Chinese translation of your response), and "vocabulary" (an array of 1-3 useful English words or phrases used in your response).`
             },
             ...history.slice(-10), // Keep last 10 messages for context
             { role: 'user', content: text }
@@ -97,6 +109,7 @@ export function useEnglishFlow() {
       const data = await response.json();
       let aiText = "Sorry, I didn't catch that.";
       let aiTranslation = "";
+      let aiVocab: string[] = [];
 
       try {
         const content = data.choices?.[0]?.message?.content;
@@ -104,6 +117,7 @@ export function useEnglishFlow() {
           const parsed = JSON.parse(content);
           aiText = parsed.english || content;
           aiTranslation = parsed.chinese || "";
+          aiVocab = parsed.vocabulary || [];
         }
       } catch (e) {
         aiText = data.choices?.[0]?.message?.content || aiText;
@@ -111,6 +125,9 @@ export function useEnglishFlow() {
 
       const aiMsgId = (Date.now() + 1).toString();
       addOrUpdateMessage(aiMsgId, 'ai', aiText, true, aiTranslation);
+      if (aiVocab.length > 0) {
+        useStore.getState().addVocabulary(aiVocab);
+      }
       
       setThinking(false);
       speak(aiText);
@@ -156,6 +173,17 @@ export function useEnglishFlow() {
 
     recognitionRef.current.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
+      const lowerTranscript = transcript.toLowerCase();
+      
+      if (lowerTranscript.includes('stop for now') || lowerTranscript.includes('end session')) {
+        speak("Okay, ending the session. See you next time!");
+        setTimeout(() => {
+          disconnect();
+          useStore.getState().setCurrentView('home');
+        }, 3000);
+        return;
+      }
+
       if (transcript.trim()) {
         handleUserAudioText(transcript);
       }
@@ -194,8 +222,14 @@ export function useEnglishFlow() {
 
     try { recognitionRef.current.start(); } catch (e) {}
     
-    const greeting = "Hello! I'm EnglishFlow. What would you like to talk about today?";
-    const greetingTrans = "你好！我是 EnglishFlow。今天想聊点什么？";
+    const hasHistory = useStore.getState().messages.length > 0;
+    const greeting = hasHistory 
+      ? "Hey, welcome back! Shall we continue our talk?" 
+      : "Hello! I'm EnglishFlow. What would you like to talk about today?";
+    const greetingTrans = hasHistory
+      ? "嘿，欢迎回来！我们继续刚才的话题吗？"
+      : "你好！我是 EnglishFlow。今天想聊点什么？";
+      
     const aiMsgId = Date.now().toString();
     addOrUpdateMessage(aiMsgId, 'ai', greeting, true, greetingTrans);
     speak(greeting);

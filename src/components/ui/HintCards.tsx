@@ -14,7 +14,7 @@ export default function HintCards() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/60 flex items-start gap-3"
+            className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm hover:shadow-lg transition-all border border-white/60 flex items-start gap-3"
           >
             <Lightbulb className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
             <div>
@@ -31,7 +31,7 @@ export default function HintCards() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-white/60 flex items-start gap-3"
+            className="bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm hover:shadow-lg transition-all border border-white/60 flex items-start gap-3"
           >
             <MessageCircle className="w-5 h-5 text-brand-secondary shrink-0 mt-0.5" />
             <div>

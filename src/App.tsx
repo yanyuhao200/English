@@ -5,16 +5,14 @@
 
 import Layout from "./components/layout/Layout";
 import { useStore } from './store/useStore';
-import { useEnglishFlow } from './hooks/useEnglishFlow';
-import Waveform from './components/ui/Waveform';
-import FlowSlider from './components/ui/FlowSlider';
-import HintCards from './components/ui/HintCards';
-import ChatTranscript from './components/ui/ChatTranscript';
-import { Mic, MicOff, Square } from 'lucide-react';
+import Dashboard from './components/Dashboard/Dashboard';
+import Conversation from './components/Conversation/Conversation';
+import Review from './components/Dashboard/Review';
+import Vocabulary from './components/Dashboard/Vocabulary';
+import { AnimatePresence } from 'motion/react';
 
 export default function App() {
-  const { isConnected, isListening, combo } = useStore();
-  const { connect, disconnect, toggleListening } = useEnglishFlow();
+  const { currentView, combo } = useStore();
 
   return (
     <Layout>
@@ -23,7 +21,7 @@ export default function App() {
         <h1 className="text-xl font-semibold text-slate-800 tracking-tight">
           EnglishFlow
         </h1>
-        {isConnected && (
+        {combo > 0 && (
           <div className="flex items-center gap-2 bg-white/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/50 shadow-sm">
             <span className="text-sm font-medium text-slate-600">Flow Combo</span>
             <span className="text-brand-primary font-bold">{combo}</span>
@@ -32,54 +30,13 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center relative p-8">
-        {!isConnected ? (
-          <div className="text-center max-w-xs">
-            <div className="w-24 h-24 bg-white rounded-full shadow-xl flex items-center justify-center mx-auto mb-8 border border-slate-100">
-              <Mic className="w-10 h-10 text-brand-primary" />
-            </div>
-            <h2 className="text-2xl font-semibold text-slate-800 mb-3">Ready to flow?</h2>
-            <p className="text-slate-500 mb-8">
-              No scores, no pressure. Just natural conversation at your pace.
-            </p>
-            <button 
-              onClick={connect}
-              className="w-full bg-slate-800 text-white px-8 py-4 rounded-full font-medium shadow-lg hover:bg-slate-700 transition-colors active:scale-95 flex items-center justify-center gap-2"
-            >
-              <Mic className="w-5 h-5" />
-              Start Practice
-            </button>
-          </div>
-        ) : (
-          <>
-            <ChatTranscript />
-            <Waveform />
-            <FlowSlider />
-            <HintCards />
-            
-            {/* Controls */}
-            <div className="absolute bottom-8 flex items-center gap-4">
-              <button 
-                onClick={toggleListening}
-                className={`w-14 h-14 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 ${
-                  isListening 
-                    ? 'bg-brand-primary text-white animate-pulse shadow-brand-primary/30' 
-                    : 'bg-white text-slate-400 border border-slate-200'
-                }`}
-              >
-                {isListening ? <Mic className="w-6 h-6" /> : <MicOff className="w-6 h-6" />}
-              </button>
-
-              <button 
-                onClick={disconnect}
-                className="bg-white text-slate-800 px-6 py-4 rounded-full font-medium shadow-md hover:bg-slate-50 transition-colors active:scale-95 flex items-center gap-2 border border-slate-200"
-              >
-                <Square className="w-4 h-4" />
-                End Session
-              </button>
-            </div>
-          </>
-        )}
+      <div className="flex-1 flex flex-col items-center justify-center relative p-8 h-full">
+        <AnimatePresence mode="wait">
+          {currentView === 'home' && <Dashboard key="home" />}
+          {currentView === 'conversation' && <Conversation key="conversation" />}
+          {currentView === 'review' && <Review key="review" />}
+          {currentView === 'vocabulary' && <Vocabulary key="vocabulary" />}
+        </AnimatePresence>
       </div>
     </Layout>
   );

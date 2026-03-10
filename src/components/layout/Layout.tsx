@@ -6,9 +6,9 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen w-full bg-[#F0F4F8] text-slate-800 font-sans selection:bg-indigo-200 selection:text-indigo-900 flex flex-col items-center justify-center overflow-hidden">
+    <div className="min-h-screen w-full bg-slate-50 text-slate-900 font-sans selection:bg-indigo-200 selection:text-indigo-900 flex flex-col items-center justify-center overflow-hidden">
       {/* Background ambient elements could go here */}
-      <main className="w-full max-w-md h-full min-h-screen sm:min-h-[800px] sm:h-[800px] sm:rounded-[2.5rem] sm:shadow-2xl sm:border sm:border-white/50 bg-[#F0F4F8] relative overflow-hidden flex flex-col">
+      <main className="w-full max-w-md h-full min-h-screen sm:min-h-[800px] sm:h-[800px] sm:rounded-[2.5rem] sm:shadow-2xl sm:border sm:border-white/50 bg-slate-50 relative overflow-hidden flex flex-col">
         {children}
       </main>
     </div>
