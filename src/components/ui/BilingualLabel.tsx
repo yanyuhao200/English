@@ -28,6 +28,12 @@ export default function BilingualLabel({
     right: 'items-end text-right'
   }[align];
 
+  const justifyClass = {
+    left: 'justify-start',
+    center: 'justify-center',
+    right: 'justify-end'
+  }[align];
+
   const handlePointerDown = () => {
     if (!showTranslation) setIsPeeking(true);
   };
@@ -46,7 +52,7 @@ export default function BilingualLabel({
       <span className={`font-semibold leading-tight ${enClassName}`}>
         {en}
       </span>
-      <div className="relative h-4 overflow-hidden w-full flex items-center justify-inherit">
+      <div className={`relative h-4 overflow-hidden w-full flex items-center ${justifyClass}`}>
         <AnimatePresence mode="wait">
           {(showTranslation || isPeeking) && (
             <motion.span

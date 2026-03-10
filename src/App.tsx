@@ -36,7 +36,8 @@ export default function App() {
   const navigate = useNavigate();
 
   const handleDragEnd = (event: any, info: any) => {
-    if (info.offset.x > 100 && location.pathname !== '/') {
+    // Increase threshold to 150px and check velocity to avoid accidental triggers
+    if (info.offset.x > 150 && info.velocity.x > 500 && location.pathname !== '/') {
       navigate(-1);
     }
   };
@@ -50,6 +51,7 @@ export default function App() {
         </h1>
         <div className="flex items-center gap-4">
           <button
+            type="button"
             onClick={() => setShowTranslation(!showTranslation)}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${
               showTranslation 

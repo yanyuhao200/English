@@ -8,7 +8,7 @@ export function useTranslator() {
   const recognitionRef = useRef<any>(null);
 
   const translate = useCallback(async (text: string) => {
-    if (!text.trim()) return;
+    if (!text.trim()) return false;
     setIsTranslating(true);
     
     try {
@@ -31,6 +31,8 @@ export function useTranslator() {
         })
       });
 
+      if (!response.ok) throw new Error("Translation failed");
+
       const data = await response.json();
       const content = data.choices?.[0]?.message?.content;
       
@@ -47,9 +49,12 @@ export function useTranslator() {
           explanation: parsed.explanation,
           timestamp: Date.now()
         });
+        return true;
       }
+      return false;
     } catch (error) {
       console.error("Translation error:", error);
+      return false;
     } finally {
       setIsTranslating(false);
     }

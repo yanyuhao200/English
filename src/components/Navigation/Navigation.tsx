@@ -25,6 +25,7 @@ export default function Navigation() {
           return (
             <button
               key={tab.id}
+              type="button"
               onClick={() => navigate(tab.path)}
               className={`relative flex flex-col items-center gap-1 p-3 rounded-2xl transition-all flex-1 ${
                 isActive ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'

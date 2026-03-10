@@ -7,8 +7,9 @@ import HintCards from '../ui/HintCards';
 import ChatTranscript from '../ui/ChatTranscript';
 import FloatingTranslator from '../Translator/FloatingTranslator';
 import { Mic, MicOff, Square, ChevronLeft, Moon } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+import BilingualLabel from '../ui/BilingualLabel';
 
 export default function Conversation() {
   const { isConnected, isListening, messages, isWhisperMode, setWhisperMode } = useStore();
@@ -31,6 +32,7 @@ export default function Conversation() {
     >
       <div className="absolute top-4 left-4 z-20 flex items-center gap-2">
         <button 
+          type="button"
           onClick={() => {
             disconnect();
             navigate('/');
@@ -40,6 +42,7 @@ export default function Conversation() {
           <ChevronLeft className="w-6 h-6" />
         </button>
         <button 
+          type="button"
           onClick={() => setWhisperMode(!isWhisperMode)}
           className={`p-2 rounded-full shadow-sm hover:shadow-md transition-all border ${isWhisperMode ? 'bg-indigo-900 border-indigo-700 text-indigo-300 shadow-indigo-900/50' : 'bg-white/60 backdrop-blur-md border-white/50 text-slate-400'}`}
           title="Whisper Mode"
@@ -53,9 +56,34 @@ export default function Conversation() {
       <FlowSlider />
       <HintCards />
       
+      {/* Tap to Start Overlay for Mobile */}
+      <AnimatePresence>
+        {!isListening && !useStore.getState().isAiSpeaking && !useStore.getState().isThinking && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 z-30 bg-white/20 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center"
+            onClick={toggleListening}
+          >
+            <div className="bg-white p-8 rounded-full shadow-2xl mb-6 animate-bounce">
+              <Mic className="w-12 h-12 text-brand-primary" />
+            </div>
+            <BilingualLabel 
+              en="Tap to start flowing" 
+              cn="点击开始交流" 
+              align="center"
+              enClassName="text-xl font-bold text-slate-800"
+              cnClassName="text-sm"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       {/* Controls */}
       <div className="absolute bottom-8 flex items-center gap-4 z-20">
         <button 
+          type="button"
           onClick={toggleListening}
           className={`w-14 h-14 rounded-full flex items-center justify-center shadow-md transition-all active:scale-95 ${
             isListening 
@@ -67,6 +95,7 @@ export default function Conversation() {
         </button>
 
         <button 
+          type="button"
           onClick={() => {
             disconnect();
             navigate('/');

@@ -17,10 +17,13 @@ export default function Translator() {
 
   const isFavorited = result ? favorites.some(f => f.original === result.original) : false;
 
-  const handleTranslate = () => {
-    if (inputText.trim()) {
-      translate(inputText);
-      setInputText('');
+  const handleTranslate = async () => {
+    if (inputText.trim() && !isTranslating) {
+      const textToTranslate = inputText;
+      const success = await translate(textToTranslate);
+      if (success) {
+        setInputText('');
+      }
     }
   };
 
@@ -78,6 +81,7 @@ export default function Translator() {
         />
         <div className="absolute bottom-4 right-4 flex gap-2">
           <button
+            type="button"
             onClick={isRecording ? stopRecording : startRecording}
             className={`p-3 rounded-full transition-all ${
               isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
@@ -86,6 +90,7 @@ export default function Translator() {
             <Mic className="w-6 h-6" />
           </button>
           <button
+            type="button"
             onClick={handleTranslate}
             disabled={!inputText.trim() || isTranslating}
             className="p-3 bg-slate-900 text-white rounded-full hover:bg-slate-800 disabled:opacity-50 transition-all"

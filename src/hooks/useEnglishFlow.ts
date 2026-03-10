@@ -280,9 +280,15 @@ export function useEnglishFlow() {
     }, 5000);
 
     try { 
+      // On mobile, this might fail if not in a direct click handler
+      // We'll handle the failure gracefully and let the user click the mic button
       recognitionRef.current.start(); 
       isRecognitionActiveRef.current = true;
-    } catch (e) {}
+    } catch (e) {
+      console.warn("Initial recognition start failed, waiting for user gesture", e);
+      isListeningRef.current = false;
+      setListening(false);
+    }
     
     const hasHistory = useStore.getState().messages.length > 0;
     const greeting = hasHistory 
