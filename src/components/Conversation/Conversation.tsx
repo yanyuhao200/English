@@ -5,12 +5,15 @@ import Waveform from '../ui/Waveform';
 import FlowSlider from '../ui/FlowSlider';
 import HintCards from '../ui/HintCards';
 import ChatTranscript from '../ui/ChatTranscript';
+import FloatingTranslator from '../Translator/FloatingTranslator';
 import { Mic, MicOff, Square, ChevronLeft, Moon } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Conversation() {
-  const { isConnected, isListening, setCurrentView, messages, isWhisperMode, setWhisperMode } = useStore();
+  const { isConnected, isListening, messages, isWhisperMode, setWhisperMode } = useStore();
   const { connect, disconnect, toggleListening } = useEnglishFlow();
+  const navigate = useNavigate();
 
   useEffect(() => {
     connect();
@@ -30,7 +33,7 @@ export default function Conversation() {
         <button 
           onClick={() => {
             disconnect();
-            setCurrentView('home');
+            navigate('/');
           }}
           className={`p-2 rounded-full shadow-sm hover:shadow-md transition-all border ${isWhisperMode ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-white/60 backdrop-blur-md border-white/50 text-slate-600'}`}
         >
@@ -66,7 +69,7 @@ export default function Conversation() {
         <button 
           onClick={() => {
             disconnect();
-            setCurrentView('home');
+            navigate('/');
           }}
           className={`px-6 py-4 rounded-full font-medium shadow-md transition-all hover:shadow-lg active:scale-95 flex items-center gap-2 border ${isWhisperMode ? 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700' : 'bg-white text-slate-800 hover:bg-slate-50 border-slate-200'}`}
         >
@@ -74,6 +77,8 @@ export default function Conversation() {
           End Session
         </button>
       </div>
+
+      <FloatingTranslator />
     </motion.div>
   );
 }

@@ -2,9 +2,11 @@ import React, { useState, useRef } from 'react';
 import { useStore } from '../../store/useStore';
 import { ChevronLeft, Play, Pause, RotateCcw } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Review() {
-  const { messages, setCurrentView } = useStore();
+  const { messages } = useStore();
+  const navigate = useNavigate();
   const [playingId, setPlayingId] = useState<string | null>(null);
   const synthRef = useRef<SpeechSynthesis | null>(window.speechSynthesis);
 
@@ -62,7 +64,7 @@ export default function Review() {
     >
       <header className="flex items-center gap-4 mb-6">
         <button 
-          onClick={() => setCurrentView('home')}
+          onClick={() => navigate('/')}
           className="bg-white p-2 rounded-full shadow-sm hover:shadow-md transition-all border border-slate-100 text-slate-600"
         >
           <ChevronLeft className="w-5 h-5" />

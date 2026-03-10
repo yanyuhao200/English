@@ -2,9 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { useStore } from '../../store/useStore';
 import { ChevronLeft } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Vocabulary() {
-  const { vocabulary, setCurrentView } = useStore();
+  const { vocabulary } = useStore();
+  const navigate = useNavigate();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export default function Vocabulary() {
     >
       <header className="flex items-center gap-4 mb-6 z-10">
         <button 
-          onClick={() => setCurrentView('home')}
+          onClick={() => navigate('/')}
           className="bg-white/10 p-2 rounded-full shadow-sm hover:bg-white/20 transition-all border border-white/10 text-white"
         >
           <ChevronLeft className="w-5 h-5" />

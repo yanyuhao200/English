@@ -1,7 +1,19 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type ViewState = 'home' | 'conversation' | 'review' | 'vocabulary';
+export type ViewState = 'home' | 'conversation' | 'review' | 'vocabulary' | 'translate' | 'settings';
+
+export interface FavoriteTranslation {
+  id: string;
+  original: string;
+  variants: {
+    casual: string;
+    formal: string;
+    slang: string;
+  };
+  explanation: string;
+  timestamp: number;
+}
 
 export interface Message {
   id: string;
@@ -32,6 +44,7 @@ interface AppState {
   isWhisperMode: boolean;
   isHandsFreeMode: boolean;
   vocabulary: VocabWord[];
+  favorites: FavoriteTranslation[];
   currentSpokenWordIndex: number;
   
   setCurrentView: (view: ViewState) => void;
@@ -47,6 +60,8 @@ interface AppState {
   setWhisperMode: (val: boolean) => void;
   setHandsFreeMode: (val: boolean) => void;
   addVocabulary: (words: string[]) => void;
+  addFavorite: (translation: FavoriteTranslation) => void;
+  removeFavorite: (id: string) => void;
   setCurrentSpokenWordIndex: (index: number) => void;
   clearHistory: () => void;
   deleteMessage: (id: string) => void;
@@ -67,6 +82,7 @@ export const useStore = create<AppState>()(
       isWhisperMode: false,
       isHandsFreeMode: false,
       vocabulary: [],
+      favorites: [],
       currentSpokenWordIndex: -1,
 
       setCurrentView: (view) => set({ currentView: view }),
@@ -108,6 +124,12 @@ export const useStore = create<AppState>()(
         });
         return { vocabulary: newVocab };
       }),
+      addFavorite: (translation) => set((state) => ({
+        favorites: [translation, ...state.favorites]
+      })),
+      removeFavorite: (id) => set((state) => ({
+        favorites: state.favorites.filter(f => f.id !== id)
+      })),
       setCurrentSpokenWordIndex: (index) => set({ currentSpokenWordIndex: index }),
       clearHistory: () => set({ messages: [], combo: 0 }),
       deleteMessage: (id) => set((state) => ({
@@ -120,6 +142,7 @@ export const useStore = create<AppState>()(
         messages: state.messages, 
         combo: state.combo, 
         vocabulary: state.vocabulary,
+        favorites: state.favorites,
         currentView: state.currentView || 'home'
       }),
     }
