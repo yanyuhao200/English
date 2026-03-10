@@ -115,7 +115,8 @@ export const useStore = create<AppState>()(
       partialize: (state) => ({ 
         messages: state.messages, 
         combo: state.combo, 
-        vocabulary: state.vocabulary 
+        vocabulary: state.vocabulary,
+        currentView: state.currentView || 'home'
       }),
     }
   )

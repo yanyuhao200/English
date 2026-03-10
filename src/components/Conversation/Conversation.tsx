@@ -13,13 +13,11 @@ export default function Conversation() {
   const { connect, disconnect, toggleListening } = useEnglishFlow();
 
   useEffect(() => {
-    if (!isConnected) {
-      connect();
-    }
+    connect();
     return () => {
       disconnect();
     };
-  }, [connect, disconnect, isConnected]);
+  }, [connect, disconnect]);
 
   return (
     <motion.div 

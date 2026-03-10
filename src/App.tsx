@@ -32,7 +32,7 @@ export default function App() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center relative p-8 h-full">
         <AnimatePresence mode="wait">
-          {currentView === 'home' && <Dashboard key="home" />}
+          {(!currentView || currentView === 'home') && <Dashboard key="home" />}
           {currentView === 'conversation' && <Conversation key="conversation" />}
           {currentView === 'review' && <Review key="review" />}
           {currentView === 'vocabulary' && <Vocabulary key="vocabulary" />}

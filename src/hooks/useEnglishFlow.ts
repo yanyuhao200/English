@@ -2,8 +2,9 @@ import { useEffect, useRef, useCallback } from 'react';
 import { useStore } from '../store/useStore';
 
 export function useEnglishFlow() {
-  const { setConnected, setAiSpeaking, setThinking, setListening, aiSpeed, setHintLevel, incrementCombo, addOrUpdateMessage } = useStore();
+  const { setConnected, setAiSpeaking, setThinking, setListening, setHintLevel, incrementCombo, addOrUpdateMessage } = useStore();
   const recognitionRef = useRef<any>(null);
+  const isRecognitionActiveRef = useRef(false);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const comboTimerRef = useRef<NodeJS.Timeout | null>(null);
   const silenceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -31,7 +32,7 @@ export function useEnglishFlow() {
     useStore.getState().setCurrentSpokenWordIndex(0);
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = 'en-US';
-    utterance.rate = aiSpeed;
+    utterance.rate = useStore.getState().aiSpeed;
     utterance.volume = useStore.getState().isWhisperMode ? 0.3 : 1.0;
     utterance.pitch = useStore.getState().isWhisperMode ? 0.8 : 1.0;
 
@@ -47,8 +48,9 @@ export function useEnglishFlow() {
       setAiSpeaking(false);
       useStore.getState().setCurrentSpokenWordIndex(-1);
       try {
-        if (recognitionRef.current && isListeningRef.current) {
+        if (recognitionRef.current && isListeningRef.current && !isRecognitionActiveRef.current) {
           recognitionRef.current.start();
+          isRecognitionActiveRef.current = true;
           setListening(true);
         }
       } catch (e) {}
@@ -59,21 +61,27 @@ export function useEnglishFlow() {
       console.error("Speech synthesis error", e);
       setAiSpeaking(false);
       try {
-        if (recognitionRef.current && isListeningRef.current) {
+        if (recognitionRef.current && isListeningRef.current && !isRecognitionActiveRef.current) {
           recognitionRef.current.start();
+          isRecognitionActiveRef.current = true;
           setListening(true);
         }
       } catch (err) {}
     }
 
     synthRef.current.speak(utterance);
-  }, [aiSpeed, setAiSpeaking, setListening, resetSilenceTimer]);
+  }, [setAiSpeaking, setListening, resetSilenceTimer]);
 
   const handleUserAudioText = useCallback(async (text: string) => {
     const userMsgId = Date.now().toString();
     addOrUpdateMessage(userMsgId, 'user', text, true);
 
-    try { recognitionRef.current?.stop(); } catch (e) {}
+    if (recognitionRef.current && isRecognitionActiveRef.current) {
+      try { 
+        recognitionRef.current.stop(); 
+        isRecognitionActiveRef.current = false;
+      } catch (e) {}
+    }
     setListening(false);
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     setThinking(true);
@@ -145,15 +153,26 @@ export function useEnglishFlow() {
     if (useStore.getState().isListening) {
       isListeningRef.current = false;
       setListening(false);
-      try { recognitionRef.current.stop(); } catch (e) {}
+      if (isRecognitionActiveRef.current) {
+        try { 
+          recognitionRef.current.stop(); 
+          isRecognitionActiveRef.current = false;
+        } catch (e) {}
+      }
     } else {
       isListeningRef.current = true;
       setListening(true);
-      try { recognitionRef.current.start(); } catch (e) {}
+      if (!isRecognitionActiveRef.current) {
+        try { 
+          recognitionRef.current.start(); 
+          isRecognitionActiveRef.current = true;
+        } catch (e) {}
+      }
     }
   }, [setListening]);
 
   const connect = useCallback(() => {
+    if (useStore.getState().isConnected) return;
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
       alert("Speech Recognition is not supported in this browser. Please use Chrome, Edge, or Safari 14.5+ with Siri enabled.");
@@ -170,6 +189,10 @@ export function useEnglishFlow() {
     recognitionRef.current.continuous = false;
     recognitionRef.current.interimResults = false;
     recognitionRef.current.lang = 'en-US';
+
+    recognitionRef.current.onstart = () => {
+      isRecognitionActiveRef.current = true;
+    };
 
     recognitionRef.current.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
@@ -190,19 +213,27 @@ export function useEnglishFlow() {
     };
 
     recognitionRef.current.onend = () => {
+      isRecognitionActiveRef.current = false;
       if (isListeningRef.current && !useStore.getState().isAiSpeaking && !useStore.getState().isThinking) {
-        try { 
-          recognitionRef.current.start(); 
-          setListening(true);
-        } catch (e) {
-          setListening(false);
-        }
+        // Add a small delay to prevent rapid restart loops
+        setTimeout(() => {
+          if (isListeningRef.current && !useStore.getState().isAiSpeaking && !useStore.getState().isThinking && !isRecognitionActiveRef.current) {
+            try { 
+              recognitionRef.current.start(); 
+              isRecognitionActiveRef.current = true;
+              setListening(true);
+            } catch (e) {
+              setListening(false);
+            }
+          }
+        }, 100);
       } else {
         setListening(false);
       }
     };
 
     recognitionRef.current.onerror = (event: any) => {
+      isRecognitionActiveRef.current = false;
       if (event.error !== 'no-speech') {
         console.error("Speech recognition error", event.error);
         setListening(false);
@@ -220,7 +251,10 @@ export function useEnglishFlow() {
       }
     }, 5000);
 
-    try { recognitionRef.current.start(); } catch (e) {}
+    try { 
+      recognitionRef.current.start(); 
+      isRecognitionActiveRef.current = true;
+    } catch (e) {}
     
     const hasHistory = useStore.getState().messages.length > 0;
     const greeting = hasHistory 
@@ -239,7 +273,12 @@ export function useEnglishFlow() {
   const disconnect = useCallback(() => {
     isListeningRef.current = false;
     if (recognitionRef.current) {
-      try { recognitionRef.current.stop(); } catch (e) {}
+      if (isRecognitionActiveRef.current) {
+        try { 
+          recognitionRef.current.stop(); 
+          isRecognitionActiveRef.current = false;
+        } catch (e) {}
+      }
     }
     if (synthRef.current) {
       synthRef.current.cancel();
