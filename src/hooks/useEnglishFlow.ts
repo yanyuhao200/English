@@ -224,30 +224,48 @@ export function useEnglishFlow() {
 
     recognitionRef.current.onend = () => {
       isRecognitionActiveRef.current = false;
-      if (isListeningRef.current && !useStore.getState().isAiSpeaking && !useStore.getState().isThinking) {
-        // Add a small delay to prevent rapid restart loops
+      
+      // Only restart if we are supposed to be listening and AI is not talking
+      const state = useStore.getState();
+      if (isListeningRef.current && !state.isAiSpeaking && !state.isThinking) {
+        // Add a slightly longer delay on mobile to prevent rapid restart loops
         setTimeout(() => {
-          if (isListeningRef.current && !useStore.getState().isAiSpeaking && !useStore.getState().isThinking && !isRecognitionActiveRef.current) {
+          const currentState = useStore.getState();
+          if (isListeningRef.current && !currentState.isAiSpeaking && !currentState.isThinking && !isRecognitionActiveRef.current) {
             try { 
               recognitionRef.current.start(); 
               isRecognitionActiveRef.current = true;
-              setListening(true);
+              // Don't call setListening(true) here if it's already true to avoid unnecessary re-renders
+              if (!currentState.isListening) setListening(true);
             } catch (e) {
-              setListening(false);
+              console.error("Failed to restart recognition:", e);
+              // If it fails to start, we should probably stop trying for a bit
+              isRecognitionActiveRef.current = false;
             }
           }
-        }, 100);
+        }, 300);
       } else {
-        setListening(false);
+        // Only update store if state actually changed
+        if (state.isListening) setListening(false);
       }
     };
 
     recognitionRef.current.onerror = (event: any) => {
       isRecognitionActiveRef.current = false;
-      if (event.error !== 'no-speech') {
-        console.error("Speech recognition error", event.error);
+      
+      if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+        console.error("Speech recognition fatal error:", event.error);
+        isListeningRef.current = false;
         setListening(false);
+        alert("Microphone access was denied or is not available. Please check your browser settings.");
+      } else if (event.error === 'network') {
+        console.error("Speech recognition network error");
+        // Network errors might be transient, but let's not loop too fast
+      } else if (event.error !== 'no-speech') {
+        console.error("Speech recognition error:", event.error);
       }
+      
+      // Note: onend will still be called after onerror
     };
 
     setConnected(true);
