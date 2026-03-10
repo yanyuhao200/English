@@ -15,7 +15,8 @@ import Library from './components/Library/Library';
 import Settings from './components/Settings/Settings';
 import Navigation from './components/Navigation/Navigation';
 import { AnimatePresence, motion } from 'motion/react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { Languages } from 'lucide-react';
 
 const PageWrapper = ({ children }: { children: React.ReactNode }) => (
   <motion.div
@@ -30,8 +31,15 @@ const PageWrapper = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function App() {
-  const { combo } = useStore();
+  const { combo, showTranslation, setShowTranslation } = useStore();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleDragEnd = (event: any, info: any) => {
+    if (info.offset.x > 100 && location.pathname !== '/') {
+      navigate(-1);
+    }
+  };
 
   return (
     <Layout>
@@ -40,16 +48,37 @@ export default function App() {
         <h1 className="text-xl font-semibold text-slate-800 tracking-tight">
           EnglishFlow
         </h1>
-        {combo > 0 && (
-          <div className="flex items-center gap-2 bg-white/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/50 shadow-sm">
-            <span className="text-sm font-medium text-slate-600">Flow Combo</span>
-            <span className="text-brand-primary font-bold">{combo}</span>
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowTranslation(!showTranslation)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all ${
+              showTranslation 
+                ? 'bg-brand-primary/10 border-brand-primary/20 text-brand-primary' 
+                : 'bg-slate-100 border-slate-200 text-slate-400'
+            }`}
+          >
+            <Languages className="w-4 h-4" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">
+              {showTranslation ? 'Bilingual' : 'English'}
+            </span>
+          </button>
+          {combo > 0 && (
+            <div className="flex items-center gap-2 bg-white/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/50 shadow-sm">
+              <span className="text-sm font-medium text-slate-600">Flow Combo</span>
+              <span className="text-brand-primary font-bold">{combo}</span>
+            </div>
+          )}
+        </div>
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center relative h-full overflow-x-hidden">
+      <motion.div 
+        className="flex-1 flex flex-col items-center relative h-full overflow-x-hidden"
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        onDragEnd={handleDragEnd}
+      >
         <AnimatePresence mode="wait">
           <Routes location={location}>
             <Route path="/" element={<PageWrapper><Dashboard /></PageWrapper>} />
@@ -61,7 +90,7 @@ export default function App() {
             <Route path="/settings" element={<PageWrapper><Settings /></PageWrapper>} />
           </Routes>
         </AnimatePresence>
-      </div>
+      </motion.div>
 
       <Navigation />
     </Layout>

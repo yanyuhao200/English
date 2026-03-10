@@ -43,6 +43,7 @@ interface AppState {
   hintLevel: number; // 0: none, 1: keywords, 2: topic, 3: phrases
   isWhisperMode: boolean;
   isHandsFreeMode: boolean;
+  showTranslation: boolean;
   vocabulary: VocabWord[];
   favorites: FavoriteTranslation[];
   currentSpokenWordIndex: number;
@@ -59,6 +60,7 @@ interface AppState {
   setHintLevel: (level: number) => void;
   setWhisperMode: (val: boolean) => void;
   setHandsFreeMode: (val: boolean) => void;
+  setShowTranslation: (val: boolean) => void;
   addVocabulary: (words: string[]) => void;
   addFavorite: (translation: FavoriteTranslation) => void;
   removeFavorite: (id: string) => void;
@@ -81,6 +83,7 @@ export const useStore = create<AppState>()(
       hintLevel: 0,
       isWhisperMode: false,
       isHandsFreeMode: false,
+      showTranslation: true,
       vocabulary: [],
       favorites: [],
       currentSpokenWordIndex: -1,
@@ -105,6 +108,7 @@ export const useStore = create<AppState>()(
       setHintLevel: (level) => set({ hintLevel: level }),
       setWhisperMode: (val) => set({ isWhisperMode: val }),
       setHandsFreeMode: (val) => set({ isHandsFreeMode: val }),
+      setShowTranslation: (val) => set({ showTranslation: val }),
       addVocabulary: (words) => set((state) => {
         const newVocab = [...state.vocabulary];
         words.forEach(w => {
@@ -143,6 +147,7 @@ export const useStore = create<AppState>()(
         combo: state.combo, 
         vocabulary: state.vocabulary,
         favorites: state.favorites,
+        showTranslation: state.showTranslation,
         currentView: state.currentView || 'home'
       }),
     }

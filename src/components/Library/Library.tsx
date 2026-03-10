@@ -2,6 +2,7 @@ import React from 'react';
 import { useStore } from '../../store/useStore';
 import { motion } from 'motion/react';
 import { Star, Library as LibraryIcon, Trash2 } from 'lucide-react';
+import BilingualLabel from '../ui/BilingualLabel';
 
 export default function Library() {
   const { favorites, removeFavorite } = useStore();
@@ -11,7 +12,7 @@ export default function Library() {
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
           <LibraryIcon className="w-8 h-8 text-brand-secondary" />
-          Library
+          <BilingualLabel en="Library" cn="收藏夹" enClassName="text-3xl" cnClassName="text-sm" />
         </h1>
         <p className="text-slate-500">Your collection of idiomatic gems.</p>
       </header>
@@ -19,7 +20,7 @@ export default function Library() {
       {favorites.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center text-slate-400 gap-4">
           <Star className="w-12 h-12 opacity-20" />
-          <p>No favorites yet. Start translating!</p>
+          <BilingualLabel en="No favorites yet. Start translating!" cn="暂无收藏。快去翻译吧！" align="center" />
         </div>
       ) : (
         <div className="space-y-4">

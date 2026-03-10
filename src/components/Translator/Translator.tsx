@@ -5,6 +5,7 @@ import { useTranslator } from '../../hooks/useTranslator';
 import { useStore } from '../../store/useStore';
 import AudioVisualizer from './AudioVisualizer';
 import { useNavigate } from 'react-router-dom';
+import BilingualLabel from '../ui/BilingualLabel';
 
 export default function Translator() {
   const [inputText, setInputText] = useState('');
@@ -62,7 +63,7 @@ export default function Translator() {
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
           <Sparkles className="w-8 h-8 text-amber-500" />
-          Idiomatic
+          <BilingualLabel en="Idiomatic" cn="地道说" enClassName="text-3xl" cnClassName="text-sm" />
         </h1>
         <p className="text-slate-500">From literal to natural.</p>
       </header>

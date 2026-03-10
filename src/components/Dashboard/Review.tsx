@@ -3,6 +3,7 @@ import { useStore } from '../../store/useStore';
 import { ChevronLeft, Play, Pause, RotateCcw } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+import BilingualLabel from '../ui/BilingualLabel';
 
 export default function Review() {
   const { messages } = useStore();
@@ -69,7 +70,7 @@ export default function Review() {
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-xl font-semibold text-slate-800">Time-Travel Review</h2>
+        <BilingualLabel en="Time-Travel" cn="练习历程" enClassName="text-xl" cnClassName="text-xs" />
       </header>
 
       <div className="flex-1 overflow-y-auto flex flex-col gap-4 pb-20">

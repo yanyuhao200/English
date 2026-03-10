@@ -2,12 +2,13 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Mic, Languages, Library, Settings } from 'lucide-react';
 import { motion } from 'motion/react';
+import BilingualLabel from '../ui/BilingualLabel';
 
 const tabs = [
-  { id: 'practice', path: '/practice', icon: Mic, label: 'Practice' },
-  { id: 'translate', path: '/translate', icon: Languages, label: 'Translate' },
-  { id: 'library', path: '/library', icon: Library, label: 'Library' },
-  { id: 'settings', path: '/settings', icon: Settings, label: 'Settings' },
+  { id: 'practice', path: '/practice', icon: Mic, label: 'Practice', cn: '练口语' },
+  { id: 'translate', path: '/translate', icon: Languages, label: 'Translate', cn: '地道说' },
+  { id: 'library', path: '/library', icon: Library, label: 'Library', cn: '收藏夹' },
+  { id: 'settings', path: '/settings', icon: Settings, label: 'Settings', cn: '设置' },
 ];
 
 export default function Navigation() {
@@ -25,7 +26,7 @@ export default function Navigation() {
             <button
               key={tab.id}
               onClick={() => navigate(tab.path)}
-              className={`relative flex flex-col items-center gap-1 p-3 rounded-2xl transition-all ${
+              className={`relative flex flex-col items-center gap-1 p-3 rounded-2xl transition-all flex-1 ${
                 isActive ? 'text-slate-900' : 'text-slate-400 hover:text-slate-600'
               }`}
             >
@@ -36,8 +37,14 @@ export default function Navigation() {
                   transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                 />
               )}
-              <Icon className={`w-6 h-6 transition-transform ${isActive ? 'scale-110' : 'scale-100'}`} />
-              <span className="text-[10px] font-medium uppercase tracking-wider">{tab.label}</span>
+              <Icon className={`w-6 h-6 mb-1 transition-transform ${isActive ? 'scale-110' : 'scale-100'}`} />
+              <BilingualLabel 
+                en={tab.label} 
+                cn={tab.cn} 
+                align="center"
+                enClassName="text-[10px] uppercase tracking-wider"
+                cnClassName="text-[8px]"
+              />
             </button>
           );
         })}

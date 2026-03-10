@@ -3,6 +3,7 @@ import { useStore } from '../../store/useStore';
 import { ChevronLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
+import BilingualLabel from '../ui/BilingualLabel';
 
 export default function Vocabulary() {
   const { vocabulary } = useStore();
@@ -74,7 +75,7 @@ export default function Vocabulary() {
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h2 className="text-xl font-semibold">Vocabulary Galaxy</h2>
+        <BilingualLabel en="Vocab Galaxy" cn="词汇星系" enClassName="text-xl text-white" cnClassName="text-xs text-slate-400" />
       </header>
 
       <div className="flex-1 relative w-full h-full">

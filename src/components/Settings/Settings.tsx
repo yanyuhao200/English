@@ -1,12 +1,14 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
-import { Settings as SettingsIcon, Volume2, Zap, Trash2, Moon, Sun, Mic } from 'lucide-react';
+import { Settings as SettingsIcon, Volume2, Zap, Trash2, Moon, Sun, Mic, Languages } from 'lucide-react';
+import BilingualLabel from '../ui/BilingualLabel';
 
 export default function Settings() {
   const { 
     aiSpeed, setAiSpeed, 
     isWhisperMode, setWhisperMode, 
     isHandsFreeMode, setHandsFreeMode,
+    showTranslation, setShowTranslation,
     clearHistory 
   } = useStore();
 
@@ -15,7 +17,7 @@ export default function Settings() {
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-2">
           <SettingsIcon className="w-8 h-8 text-slate-400" />
-          Settings
+          <BilingualLabel en="Settings" cn="设置" enClassName="text-3xl" cnClassName="text-sm" />
         </h1>
         <p className="text-slate-500">Personalize your flow.</p>
       </header>
@@ -24,8 +26,24 @@ export default function Settings() {
         <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
+              <Languages className="w-5 h-5 text-brand-primary" />
+              <BilingualLabel en="Bilingual Mirror" cn="双语对照系统" enClassName="text-sm" cnClassName="text-[10px]" />
+            </div>
+            <button 
+              onClick={() => setShowTranslation(!showTranslation)}
+              className={`w-12 h-6 rounded-full transition-all relative ${showTranslation ? 'bg-brand-primary' : 'bg-slate-200'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${showTranslation ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+          <p className="text-xs text-slate-400">Show Chinese translations for all UI elements.</p>
+        </section>
+
+        <section className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <Volume2 className="w-5 h-5 text-slate-400" />
-              <span className="font-medium text-slate-700">AI Speaking Speed</span>
+              <BilingualLabel en="AI Speed" cn="语速调节" enClassName="text-sm" cnClassName="text-[10px]" />
             </div>
             <span className="text-sm font-bold text-brand-primary">{aiSpeed.toFixed(1)}x</span>
           </div>
@@ -44,7 +62,7 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Zap className="w-5 h-5 text-amber-500" />
-              <span className="font-medium text-slate-700">Whisper Mode</span>
+              <BilingualLabel en="Whisper Mode" cn="耳语模式" enClassName="text-sm" cnClassName="text-[10px]" />
             </div>
             <button 
               onClick={() => setWhisperMode(!isWhisperMode)}
@@ -60,7 +78,7 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Mic className="w-5 h-5 text-blue-500" />
-              <span className="font-medium text-slate-700">Hands-Free Mode</span>
+              <BilingualLabel en="Hands-Free" cn="免提模式" enClassName="text-sm" cnClassName="text-[10px]" />
             </div>
             <button 
               onClick={() => setHandsFreeMode(!isHandsFreeMode)}
@@ -79,7 +97,7 @@ export default function Settings() {
           className="w-full flex items-center justify-center gap-2 p-4 text-red-500 font-medium hover:bg-red-50 transition-all rounded-2xl border border-transparent hover:border-red-100"
         >
           <Trash2 className="w-5 h-5" />
-          Clear History
+          <BilingualLabel en="Clear History" cn="清除历程" enClassName="text-red-500" cnClassName="text-red-300" />
         </button>
       </div>
     </div>
