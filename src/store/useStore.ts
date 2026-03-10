@@ -49,6 +49,7 @@ interface AppState {
   addVocabulary: (words: string[]) => void;
   setCurrentSpokenWordIndex: (index: number) => void;
   clearHistory: () => void;
+  deleteMessage: (id: string) => void;
 }
 
 export const useStore = create<AppState>()(
@@ -109,6 +110,9 @@ export const useStore = create<AppState>()(
       }),
       setCurrentSpokenWordIndex: (index) => set({ currentSpokenWordIndex: index }),
       clearHistory: () => set({ messages: [], combo: 0 }),
+      deleteMessage: (id) => set((state) => ({
+        messages: state.messages.filter(m => m.id !== id)
+      })),
     }),
     {
       name: 'englishflow-storage',
